@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ToString
 public class EndpointHitDto {
     private String app;
     private String uri;
