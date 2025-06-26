@@ -14,6 +14,7 @@ import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.repository.CategoryRepository;
+import ru.practicum.ewm.repository.EventRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
     public List<CategoryDto> getCategories(int from, int size) {
@@ -56,10 +58,10 @@ public class CategoryService {
         if (!categoryRepository.existsById(catId)) {
             throw new ValidationException("Категория id=" + catId + " не найдена", HttpStatus.NOT_FOUND);
         }
-/*
-        if (eventRepository.existsByCategory_Id(catId)) {
-            throw new AppException("Нельзя удалить категорию с привязанными событиями", HttpStatus.CONFLICT);
-        }*/
+
+        if (eventRepository.existsByCategoryId(catId)) {
+            throw new ValidationException("Нельзя удалить категорию с привязанными событиями", HttpStatus.CONFLICT);
+        }
 
         categoryRepository.deleteById(catId);
     }
