@@ -6,12 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.dto.EventFullDto;
 import ru.practicum.ewm.dto.StatsRequest;
 import ru.practicum.ewm.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.dto.ViewStats;
-import ru.practicum.ewm.enums.EventSort;
 import ru.practicum.ewm.enums.EventState;
 import ru.practicum.ewm.enums.RequestStatus;
 import ru.practicum.ewm.enums.StateAction;
@@ -47,7 +47,7 @@ public class AdminEventService {
     public List<EventFullDto> getEvents(List<Long> users, List<EventState> states, List<Long> categories,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
 
-        Pageable pageable = PageRequest.of(from / size, size, Sort.by(EventSort.EVENT_DATE.name())
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("eventDate")
                 .descending());
 
         boolean filterUsers = users != null && !users.isEmpty() && !(users.size() == 1 && users.getFirst() == 0);
@@ -91,7 +91,7 @@ public class AdminEventService {
 
         return events.stream()
                 .map(event -> {
-                    EventFullDto dto = EventMapper.toEventFullDto(event);
+                    EventFullDto dto = eventMapper.toEventFullDto(event);
                     dto.setConfirmedRequests(confirmedRequestsMap.getOrDefault(event.getId(), 0L));
                     dto.setViews(viewsMap.getOrDefault("/events/" + event.getId(), 0L));
                     return dto;
@@ -109,9 +109,10 @@ public class AdminEventService {
                 ));
     }
 
+    @Transactional
     public EventFullDto updateEvent(Long eventId, UpdateEventAdminRequest updateRequest) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ValidationException("Событие с id=" + eventId + " не найдено.",
+                .orElseThrow(() -> new ValidationException("Событие с id " + eventId + " не найдено",
                         HttpStatus.NOT_FOUND));
 
         if (updateRequest.getEventDate() != null &&
@@ -140,7 +141,7 @@ public class AdminEventService {
         if (updateRequest.getCategory() != null) {
             var category = categoryRepository.getCategoryById(updateRequest.getCategory());
             if (category == null) {
-                throw new ValidationException("Категория с id=" + updateRequest.getCategory() + " не найдена.",
+                throw new ValidationException("Категория с id = " + updateRequest.getCategory() + " не найдена",
                         HttpStatus.NOT_FOUND);
             }
             event.setCategory(category);
@@ -162,7 +163,7 @@ public class AdminEventService {
         }
 
         Event saved = eventRepository.save(event);
-        EventFullDto dto = EventMapper.toEventFullDto(saved);
+        EventFullDto dto = eventMapper.toEventFullDto(saved);
         dto.setConfirmedRequests(participationRequestRepository.countByEventAndStatus(eventId, RequestStatus.CONFIRMED));
 
         if (event.getPublishedOn() != null) {

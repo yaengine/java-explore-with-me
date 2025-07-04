@@ -31,13 +31,23 @@ public class PublicEventService {
     private final EventRepository eventRepository;
     private final ParticipationRequestRepository participationRequestRepository;
     private final StatsClient statsClient;
+    private final EventMapper eventMapper;
 
     public List<EventShortDto> getPublishedEvents(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean isAvailable, EventSort eventSort, int from, int size,
                                                   HttpServletRequest request) {
 
-        statsClient.sendHit(new EndpointHitDto("ExploreWithMe", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now()));
+        statsClient.sendHit(new EndpointHitDto("ExploreWithMe", request.getRequestURI(), request.getRemoteAddr(),
+                LocalDateTime.now()));
+
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Некорректные параметры для пагинации", HttpStatus.BAD_REQUEST);
+        }
+
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new ValidationException("Начальная дата не может быть позже конечной", HttpStatus.BAD_REQUEST);
+        }
 
         if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
@@ -79,7 +89,7 @@ public class PublicEventService {
                 .filter(event -> !isAvailable ||
                         confirmedRequests.getOrDefault(event.getId(), 0L) < event.getParticipantLimit())
                 .map(event -> {
-                    EventShortDto dto = EventMapper.toEventShortDto(event);
+                    EventShortDto dto = eventMapper.toEventShortDto(event);
                     dto.setConfirmedRequests(confirmedRequests.getOrDefault(event.getId(), 0L));
                     dto.setViews(viewsMap.getOrDefault("/events/" + event.getId(), 0L));
                     return dto;
@@ -93,11 +103,11 @@ public class PublicEventService {
                 request.getRemoteAddr(),
                 LocalDateTime.now()));
 
-        Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED.name())
-                .orElseThrow(() -> new ValidationException("Событие с id=" + eventId + " не найдено.",
+        Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED)
+                .orElseThrow(() -> new ValidationException("Событие с id=" + eventId + " не найдено",
                         HttpStatus.NOT_FOUND));
 
-        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        EventFullDto eventFullDto = eventMapper.toEventFullDto(event);
         eventFullDto.setConfirmedRequests(participationRequestRepository.countByEventAndStatus(eventId,
                 RequestStatus.CONFIRMED));
         StatsRequest statsRequest = StatsRequest.builder()
@@ -110,8 +120,8 @@ public class PublicEventService {
     }
 
         private Sort getSort(EventSort sort) {
-            return sort == EventSort.VIEWS ? Sort.by(Sort.Direction.DESC, EventSort.VIEWS.name()) :
-                    Sort.by(Sort.Direction.ASC, EventSort.EVENT_DATE.name());
+            return sort == EventSort.VIEWS ? Sort.by(Sort.Direction.DESC, "views") :
+                    Sort.by(Sort.Direction.ASC, "eventDate");
         }
 
 }

@@ -9,8 +9,10 @@ import lombok.Data;
 @Builder
 public class UserDto {
     Long id;
+
     @NotBlank(message = "Имя не должно быть пустым")
     String name;
+
     @Email(message = "Email должен иметь формат адреса электронной почты")
     @NotBlank(message = "Email не должен быть пустым")
     String email;

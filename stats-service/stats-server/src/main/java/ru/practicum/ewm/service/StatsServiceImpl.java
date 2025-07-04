@@ -1,6 +1,7 @@
 package ru.practicum.ewm.service;
 
 import lombok.RequiredArgsConstructor;
+import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.mapper.EndpointHitMapper;
 import ru.practicum.ewm.model.EndpointHit;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (end.isBefore(start)) {
+            throw new ValidationException("Дата начала не может быть ранее даты окончания");
+        }
         if (unique) {
             return statsRepository.getUniqueStats(start, end, uris);
         } else {

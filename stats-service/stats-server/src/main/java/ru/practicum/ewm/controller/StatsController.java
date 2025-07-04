@@ -10,7 +10,6 @@ import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.service.StatsService;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -21,21 +20,20 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
+    //Сохранение информации о том, что к эндпоинту был запрос
     public void saveHit(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("Запрос для saveHit {}", endpointHitDto);
         statsService.saveHit(endpointHitDto);
     }
 
     @GetMapping("/stats")
+    //Получение статистики по посещениям
     public List<ViewStats> getStats(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String start,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String end,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(required = false) List<String> uris,
             @RequestParam(defaultValue = "false") boolean unique) {
 
-        return statsService.getStats(LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                uris,
-                unique);
+        return statsService.getStats(start, end, uris, unique);
     }
 }

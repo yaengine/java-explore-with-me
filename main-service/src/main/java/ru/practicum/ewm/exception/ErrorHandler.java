@@ -2,6 +2,7 @@ package ru.practicum.ewm.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +18,7 @@ import java.util.*;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
+    //Обработка ошибок запроса с отсутствующим обязательным query-параметром
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMissingRequestParam(MissingServletRequestParameterException e) {
@@ -26,6 +28,18 @@ public class ErrorHandler {
                 "Missing required request parameter: " + e.getParameterName(),
                 "Request parameter is missing"
         );
+    }
+
+    //Обработка кастомных ошибок приложения
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ApiError> handleAppException(ValidationException e) {
+        ApiError apiError = buildErrorResponse(
+                e,
+                e.getStatus(),
+                e.getMessage(),
+                "Custom exception"
+        );
+        return ResponseEntity.status(e.getStatus()).body(apiError);
     }
 
     @ExceptionHandler(ResponseStatusException.class)

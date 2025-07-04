@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.dto.EventFullDto;
 import ru.practicum.ewm.dto.EventShortDto;
 import ru.practicum.ewm.enums.EventSort;
@@ -20,6 +19,7 @@ public class PublicEventController {
     private final PublicEventService publicEventService;
 
     @GetMapping
+    //Получение событий с возможностью фильтрации
     public List<EventShortDto> getEvents(
             @RequestParam(required = false) String text,
             @RequestParam(required = false) List<Long> categories,
@@ -37,6 +37,7 @@ public class PublicEventController {
     }
 
     @GetMapping("/{id}")
+    //Получение подробной информации об опубликованном событии по его идентификатору
     public EventFullDto getEvent(@PathVariable Long id, HttpServletRequest request) {
         return publicEventService.getPublishedEventById(id, request);
     }

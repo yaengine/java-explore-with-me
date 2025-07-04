@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    UserRepository userRepository;
-    UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
@@ -54,5 +54,10 @@ public class UserService {
             throw new ValidationException("Пользователь с id " + userId + " не существует", HttpStatus.NOT_FOUND);
         }
         userRepository.deleteById(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean userExists(Long userId) {
+        return userRepository.existsById(userId);
     }
 }

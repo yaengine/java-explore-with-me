@@ -11,9 +11,11 @@ import java.util.Set;
 public class StatsRequest {
     private Set<String> uris;
 
-    private LocalDateTime start;
+    @Builder.Default
+    private LocalDateTime start = LocalDateTime.now().withHour(0).withMinute(0);
 
-    private LocalDateTime end;
+    @Builder.Default
+    private LocalDateTime end = LocalDateTime.now();
 
     private boolean unique;
 }

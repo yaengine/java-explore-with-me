@@ -16,6 +16,7 @@ public class PublicCompilationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    //Получение подборок событий
     public List<CompilationDto> getCompilations(
             @RequestParam(required = false) Boolean pinned,
             @RequestParam(defaultValue = "0") int from,
@@ -25,6 +26,7 @@ public class PublicCompilationController {
 
     @GetMapping("/{compId}")
     @ResponseStatus(HttpStatus.OK)
+    //Получение подборки событий по его id
     public CompilationDto getCompilation(@PathVariable Long compId) {
         return compilationService.getCompilationById(compId);
     }

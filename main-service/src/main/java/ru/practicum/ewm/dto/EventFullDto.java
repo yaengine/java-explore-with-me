@@ -3,13 +3,15 @@ package ru.practicum.ewm.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.ewm.enums.EventState;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
 public class EventFullDto extends EventShortDto {
@@ -18,6 +20,7 @@ public class EventFullDto extends EventShortDto {
     private LocalDateTime createdOn;
 
     @NotBlank
+    @Size(min = 20, max = 7000)
     private String description;
 
     @NotNull

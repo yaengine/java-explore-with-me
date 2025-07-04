@@ -3,7 +3,6 @@ package ru.practicum.ewm.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.EventFullDto;
 import ru.practicum.ewm.dto.UpdateEventAdminRequest;
@@ -19,6 +18,8 @@ import java.util.List;
 public class AdminEventController {
     private final AdminEventService adminEventService;
 
+    @GetMapping
+    //Поиск событий администратором
     public List<EventFullDto> getEvents(
             @RequestParam(required = false) List<Long> users,
             @RequestParam(required = false) List<EventState> states,
@@ -31,7 +32,7 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
+    //Редактирование события администратором
     public EventFullDto updateEvent(
             @PathVariable Long eventId,
             @Valid @RequestBody UpdateEventAdminRequest updateRequest) {

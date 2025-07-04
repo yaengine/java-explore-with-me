@@ -33,17 +33,6 @@ public class StatsClient {
     }
 
     //Получение статистики по посещениям.
-   /* public List<ViewStats> getStats(String start, String end) {
-        return restClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/stats")
-                        .queryParam("start", start)
-                        .queryParam("end", end)
-                        .build())
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-    }*/
-
-    //Получение статистики по посещениям.
     public List<ViewStats> getStats(List<StatsRequest> statsRequests) {
         List<ViewStats> allStats = new ArrayList<>();
         for (StatsRequest statsRequest : statsRequests) {

@@ -18,18 +18,21 @@ public class AdminCompilationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    // Добавление новой подборки событий администратором
     public CompilationDto saveCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         return compilationService.saveCompilation(newCompilationDto);
     }
 
     @DeleteMapping("/{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    //Удаление подборки событий администратором
     public void deleteCompilation(@PathVariable Long compId) {
         compilationService.deleteCompilation(compId);
     }
 
     @PatchMapping("/{compId}")
     @ResponseStatus(HttpStatus.OK)
+    //Обновить информацию о подборке событий администратором
     public CompilationDto updateCompilation(@PathVariable Long compId,
                                             @Valid @RequestBody UpdateCompilationRequest request) {
         return compilationService.updateCompilation(compId, request);

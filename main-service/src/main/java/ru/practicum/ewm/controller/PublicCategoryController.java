@@ -15,7 +15,7 @@ public class PublicCategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
+    //Получение категорий
     public List<CategoryDto> getCategories(
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "10") int size) {
@@ -23,7 +23,7 @@ public class PublicCategoryController {
     }
 
     @GetMapping("/{catId}")
-    @ResponseStatus(HttpStatus.OK)
+    //Получение информации о категории по её идентификатору
     public CategoryDto getCategory(@PathVariable Long catId) {
         return categoryService.getCategoryById(catId);
     }
