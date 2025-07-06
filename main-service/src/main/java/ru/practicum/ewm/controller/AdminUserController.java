@@ -10,14 +10,25 @@ import ru.practicum.ewm.service.UserService;
 
 import java.util.List;
 
+/**
+ * Контроллер для административного управления пользователями.
+ * Предоставляет API для регистрации, просмотра и удаления пользователей.
+ */
 @RestController
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
 public class AdminUserController {
     private final UserService userService;
 
+    /**
+     * Получение информации о пользователях администратором
+     *
+     * @param ids  список идентификаторов пользователей для фильтрации (опционально)
+     * @param from количество элементов, которые нужно пропустить (по умолчанию 0)
+     * @param size количество элементов в ответе (по умолчанию 10)
+     * @return список DTO пользователей, удовлетворяющих условиям выборки
+     */
     @GetMapping
-    //Получение информации о пользователях администратором
     public List<UserDto> getUsers(
             @RequestParam(required = false) List<Long> ids,
             @RequestParam(defaultValue = "0") int from,
@@ -25,16 +36,27 @@ public class AdminUserController {
         return userService.getUsers(ids, from, size);
     }
 
+    /**
+     * Добавление нового пользователя администратором
+     *
+     * @param newUserRequest DTO с данными нового пользователя
+     * @return DTO зарегистрированного пользователя
+     * @responseStatus 201 CREATED
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    //Добавление нового пользователя администратором
     public UserDto registerUser(@Valid @RequestBody NewUserRequest newUserRequest) {
         return userService.registerUser(newUserRequest);
-}
+    }
 
+    /**
+     * Удаление пользователя администратором
+     *
+     * @param userId идентификатор пользователя для удаления
+     * @responseStatus 204 NO_CONTENT
+     */
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    //Удаление пользователя администратором
     public void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
     }

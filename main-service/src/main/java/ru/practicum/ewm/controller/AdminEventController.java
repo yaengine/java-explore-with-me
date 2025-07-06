@@ -12,14 +12,29 @@ import ru.practicum.ewm.service.AdminEventService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Контроллер для административных операций с событиями.
+ * Предоставляет API для поиска и редактирования событий администратором.
+ */
 @RestController
 @RequestMapping("/admin/events")
 @RequiredArgsConstructor
 public class AdminEventController {
     private final AdminEventService adminEventService;
 
+    /**
+     * Поиск событий администратором
+     *
+     * @param users список идентификаторов пользователей (опционально)
+     * @param states список состояний событий для фильтрации (опционально)
+     * @param categories список идентификаторов категорий для фильтрации (опционально)
+     * @param rangeStart дата и время начала периода по дате события (формат yyyy-MM-dd HH:mm:ss)
+     * @param rangeEnd дата и время окончания периода по дате события (формат yyyy-MM-dd HH:mm:ss)
+     * @param from количество событий, которые нужно пропустить (по умолчанию 0)
+     * @param size количество событий в наборе (по умолчанию 10)
+     * @return список DTO событий, удовлетворяющих условиям фильтрации
+     */
     @GetMapping
-    //Поиск событий администратором
     public List<EventFullDto> getEvents(
             @RequestParam(required = false) List<Long> users,
             @RequestParam(required = false) List<EventState> states,
@@ -31,8 +46,14 @@ public class AdminEventController {
         return adminEventService.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
+    /**
+     * Редактирование события администратором
+     *
+     * @param eventId идентификатор события для обновления
+     * @param updateRequest DTO с обновляемыми данными события
+     * @return DTO обновленного события
+     */
     @PatchMapping("/{eventId}")
-    //Редактирование события администратором
     public EventFullDto updateEvent(
             @PathVariable Long eventId,
             @Valid @RequestBody UpdateEventAdminRequest updateRequest) {

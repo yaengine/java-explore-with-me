@@ -12,14 +12,32 @@ import ru.practicum.ewm.service.PublicEventService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Публичный API контроллер для работы с событиями.
+ * Предоставляет возможность поиска и просмотра опубликованных событий.
+ */
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
 public class PublicEventController {
     private final PublicEventService publicEventService;
 
+    /**
+     * Получение событий с возможностью фильтрации
+     *
+     * @param text текст для поиска в содержимом аннотации и подробном описании события
+     * @param categories список идентификаторов категорий для фильтрации
+     * @param paid поиск только платных/бесплатных событий
+     * @param rangeStart дата и время не раньше которых должно произойти событие (формат yyyy-MM-dd HH:mm:ss)
+     * @param rangeEnd дата и время не позже которых должно произойти событие (формат yyyy-MM-dd HH:mm:ss)
+     * @param onlyAvailable только события у которых не исчерпан лимит запросов на участие
+     * @param sort только события у которых не исчерпан лимит запросов на участие
+     * @param from количество событий, которые нужно пропустить для формирования текущего набора (по умолчанию 0)
+     * @param size количество событий в наборе (по умолчанию 10)
+     * @param request объект HTTP запроса для учета статистики просмотров
+     * @return список DTO событий, удовлетворяющих условиям фильтрации
+     */
     @GetMapping
-    //Получение событий с возможностью фильтрации
     public List<EventShortDto> getEvents(
             @RequestParam(required = false) String text,
             @RequestParam(required = false) List<Long> categories,
@@ -36,8 +54,15 @@ public class PublicEventController {
                 rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
+    /**
+     * Получение подробной информации об опубликованном событии по его идентификатору
+     * Учитывает просмотр события в статистике.
+     *
+     * @param id идентификатор события
+     * @param request объект HTTP запроса для учета статистики просмотров
+     * @return полное DTO запрошенного события
+     */
     @GetMapping("/{id}")
-    //Получение подробной информации об опубликованном событии по его идентификатору
     public EventFullDto getEvent(@PathVariable Long id, HttpServletRequest request) {
         return publicEventService.getPublishedEventById(id, request);
     }
