@@ -995,7 +995,7 @@
 									"});\r",
 									"\r",
 									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-									"    pm.expect(target.id).equal(pm.collectionVariables.get('commentId'), 'ID комментария должен соответствовать ID комментария в запросе');\r",
+									"    pm.expect(target.id).to.equal(pm.collectionVariables.get('commentId'), 'ID комментария должен соответствовать ID комментария в запросе');\r",
 									"    pm.expect(target.commentText).equal(source.commentText, 'Текст комментария должен соответствовать тексту комментария в запросе');\r",
 									"    pm.expect(new Date(target.updatedAt)).to.be.greaterThan(new Date(target.createdAt), 'Дата обновления должна быть больше даты создания');\r",
 									"\r",
